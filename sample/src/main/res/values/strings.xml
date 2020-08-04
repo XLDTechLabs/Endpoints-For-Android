@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Endpoints for Android Sample</string>
+    <string name="required_storage_permission">Request Storage Permission is required to continue using the app.</string>
+</resources>

@@ -8,7 +8,7 @@ package com.xload.endpointsforandroid.utils
 object Encryptor {
 
     @JvmStatic
-    private fun encrypt(deviceId: String): String {
+    fun encrypt(deviceId: String): String {
         val encrypt1 = deviceId.indexOf('_', ignoreCase = true)
         val encrypt2 = deviceId.indexOf('_', encrypt1 + 2, ignoreCase = true)
         return deviceId.substring(encrypt1 + 1, encrypt2)

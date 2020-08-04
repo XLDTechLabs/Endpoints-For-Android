@@ -6,6 +6,8 @@ package com.xload.endpointsforandroid.utils
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
  */
 object AppConstant {
+    const val PLAY_MARKET = "market://details?id=";
+    const val GOOGLE_PLAY_MARKET = "https://play.google.com/store/apps/details?id=";
     const val XLOAD_PRODUCTION_PACKAGE = "com.xload.android"
     const val XLOAD_DEVELOPMENT_PACKAGE = "com.xload.android.debug"
     const val FOLDER_NAME = "XLoad"

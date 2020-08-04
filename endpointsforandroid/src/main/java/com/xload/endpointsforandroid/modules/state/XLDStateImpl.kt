@@ -1,7 +1,9 @@
 package com.xload.endpointsforandroid.modules.state
 
 import android.content.Context
+import android.util.Log
 import com.xload.endpointsforandroid.utils.AppConstant
+import com.xload.endpointsforandroid.utils.Encryptor
 import com.xload.endpointsforandroid.utils.Permissions.isPackageInstalled
 
 /**
@@ -12,11 +14,17 @@ import com.xload.endpointsforandroid.utils.Permissions.isPackageInstalled
 class XLDStateImpl : XLDState {
 
     override fun isXLoadAppInstalled(context: Context, isDevelopment: Boolean): Boolean {
+        Log.d("DEBUG", "isDevelopment = ${isDevelopment}")
+        Log.d("DEBUG", "isDevelopment = ${isXLoadAppDevelopmentInstalled(context)}")
         return if (isDevelopment) {
             isXLoadAppDevelopmentInstalled(context)
         } else {
             isXLoadAppProductionInstalled(context)
         }
+    }
+
+    override fun encrypt(encrypted: String): String {
+        return Encryptor.encrypt(encrypted)
     }
 
     /**

@@ -9,5 +9,5 @@ sealed class XLDError {
     object NoReadPermission: XLDError()
     object XLoadAppNotLogin: XLDError()
     object XLoadNotInstall: XLDError()
-    object UnknownError: XLDError()
+    class UnknownError(val error: String? = null): XLDError()
 }

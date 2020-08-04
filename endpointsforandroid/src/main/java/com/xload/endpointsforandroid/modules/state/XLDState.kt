@@ -14,4 +14,6 @@ interface XLDState {
      */
     fun isXLoadAppInstalled(context: Context, isDevelopment: Boolean = true): Boolean
 
+    fun encrypt(encrypted: String): String
+
 }
