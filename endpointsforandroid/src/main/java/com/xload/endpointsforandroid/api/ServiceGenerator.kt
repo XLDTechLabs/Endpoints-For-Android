@@ -1,7 +1,10 @@
 package com.xload.endpointsforandroid.api
 
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 /**
  * @author John Paul Cas
@@ -10,17 +13,29 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object ServiceGenerator {
 
-    private const val BASE_URL = "https://recipesapi.herokuapp.com"
+    private const val BASE_URL_DEVELOPMENT = "https://xld-development.appspot.com/"
+    private const val BASE_URL_PRODUCTION = "https://xld-development.appspot.com/"
 
-    private val retrofitBuilder =  Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+    @JvmStatic
+    fun getRetrofitInstance(isDevelopment: Boolean = true): Retrofit {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val okHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
-    private val retrofit = retrofitBuilder.build()
+        val baseUrl = if (isDevelopment) BASE_URL_DEVELOPMENT else BASE_URL_PRODUCTION
+        val retrofitBuilder =  Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .baseUrl(baseUrl)
 
-    private val _endpointForPartnerApi = retrofit.create(EndpointForPartnerApi::class.java)
+        return retrofitBuilder.build()
+    }
 
-    val endpointForPartnerApi: EndpointForPartnerApi
-        get() = _endpointForPartnerApi
+    @JvmStatic
+    fun getEndpointForPartnerApi(isDevelopment: Boolean): EndpointForPartnerApi {
+        return getRetrofitInstance(isDevelopment).create(EndpointForPartnerApi::class.java)
+    }
+
+
 
 }

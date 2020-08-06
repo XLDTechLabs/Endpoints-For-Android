@@ -11,6 +11,7 @@
 
     <Button
         android:id="@+id/btnAcceptStoragePermission"
+        android:visibility="gone"
         android:text="Accept storage permission to continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -18,12 +19,14 @@
     <Button
         android:id="@+id/btnDownloadXLoadApp"
         android:text="Download XLoad App"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/btnSignInXLoadApp"
         android:text="Login to XLoad App"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

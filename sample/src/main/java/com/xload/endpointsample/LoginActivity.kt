@@ -1,11 +1,12 @@
 package com.xload.endpointsample
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.xload.endpointsforandroid.modules.XLD
 import com.xload.endpointsforandroid.utils.OnXLDConnectionListener
 import com.xload.endpointsforandroid.utils.XLDError
@@ -21,16 +22,20 @@ class LoginActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        buttonListener()
     }
 
     override fun onResume() {
         super.onResume()
         init()
-        buttonListener()
     }
 
     private fun init() {
+        /**
+         * Check if the current app version is greater than Android M
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Check if user has storage permission
             if (hasStoragePermission()) {
                initializeXLD()
             } else {
@@ -64,20 +69,35 @@ class LoginActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    /**
+     * Initialize Endpoint for Android partner sdk
+     */
     private fun initializeXLD() {
-        XLD.init(this, true, object: OnXLDConnectionListener {
+        // initialize xload sdk
+        XLD.getInstance().init(this, object: OnXLDConnectionListener {
             override fun onConnectionError(error: XLDError) {
                 handleXLDError(error)
             }
 
             override fun onConnectionSuccess(key: String) {
                 println("DEBUG: key = ${key}")
+               startHomeActivity(key)
             }
 
         })
     }
 
+    private fun startHomeActivity(key: String) {
+        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+        intent.putExtra(Constants.UNIQUE_ID, key)
+        startActivity(intent)
+    }
+
+    /**
+     * Handle sdk error
+     */
     private fun handleXLDError(error: XLDError) {
+        Log.d("DEBUG", "error ${error}")
         when (error) {
             is XLDError.XLoadAppNotLogin -> {
                 errorSignInXLoadApp()

@@ -1,59 +1,113 @@
 package com.xload.endpointsforandroid.modules
 
 import android.app.Activity
-import android.os.Environment
-import android.util.Log
-import com.google.gson.Gson
-import com.xload.endpointsforandroid.modules.models.Generated
-import com.xload.endpointsforandroid.modules.state.XLDState
-import com.xload.endpointsforandroid.modules.state.XLDStateImpl
-import com.xload.endpointsforandroid.utils.AppConstant
+import com.xload.endpointsforandroid.api.models.LinkedWallet
+import com.xload.endpointsforandroid.api.models.WalletStatus
+import com.xload.endpointsforandroid.modules.interactor.XLDInteractor
+import com.xload.endpointsforandroid.modules.models.BaseXLD
 import com.xload.endpointsforandroid.utils.OnXLDConnectionListener
-import com.xload.endpointsforandroid.utils.Permissions
-import com.xload.endpointsforandroid.utils.XLDError
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
+import com.xload.endpointsforandroid.utils.OnXLDListener
+import com.xload.endpointsforandroid.utils.OnXLDStartListener
 
 /**
  * @author John Paul Cas
  * Created by John Paul Cas on 30/07/2020.
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
  */
-object XLD {
+class XLD(val key: String?, val secret: String?) : BaseXLD() {
 
-    private val xldState: XLDState = XLDStateImpl()
+    constructor() : this(null, null) {
+    }
 
-    private var deviceId = ""
+    companion object {
+        private var keyInstance: String? = null
+        private var secretInstance: String? = null
 
-    @JvmStatic
-    fun init(activity: Activity, isDevelopment: Boolean, listener: OnXLDConnectionListener) {
-        if (!Permissions.hasReadExternalStoragePermission(activity)) {
-            listener.onConnectionError(XLDError.NoReadPermission)
-        } else if (!xldState.isXLoadAppInstalled(activity, isDevelopment)) {
-            listener.onConnectionError(XLDError.XLoadNotInstall)
-        } else {
-            val folder = File(Environment.getExternalStorageDirectory(), AppConstant.FOLDER_NAME)
+        private var isDevelopment: Boolean = true
+        private var instance: XLD? = null
 
-            if (folder.exists()) {
-                val file = File(folder, AppConstant.FILE_NAME)
+        @JvmStatic
+        fun getInstance(
+            key: String? = null,
+            secret: String? = null,
+            development: Boolean = true
+        ): XLD {
+            isDevelopment = development
 
-                try {
-                    val result = FileInputStream(file).bufferedReader().use { it.readLine() }
-
-                    val gson = Gson()
-                    val key = gson.fromJson(result.toString(), Generated::class.java)
-                    listener.onConnectionSuccess(xldState.encrypt(key.generated))
-                } catch (ignore: FileNotFoundException) {
-                    listener.onConnectionError(XLDError.XLoadAppNotLogin)
-                } catch (error: IOException) {
-                    Log.d("DEBUG", "Error ${error.message}")
-                    listener.onConnectionError(XLDError.UnknownError(error.message))
-                }
-            } else {
-                listener.onConnectionError(XLDError.XLoadAppNotLogin)
+            if (instance == null || keyInstance == null || secretInstance == null) {
+                instance = XLD(key, secret)
             }
+
+            keyInstance = key
+            secretInstance = secret
+            return instance as XLD
+        }
+
+        @JvmStatic
+        fun getInstance(): XLD {
+
+            if (instance == null) {
+                instance = XLD()
+            }
+
+            return instance as XLD
         }
     }
+
+    private fun interactor(): XLDInteractor {
+        return getInteractor()
+    }
+
+    fun init(activity: Activity, listener: OnXLDConnectionListener) {
+        interactor().init(activity, isDevelopment, listener)
+    }
+
+    fun start(
+        deviceId: String,
+        appId: String,
+        onStartListener: OnXLDStartListener
+    ) {
+        if (key.isNullOrBlank() || secret.isNullOrBlank()) {
+            throw InstantiationException("Partner key or secret cannot be empty. Please asked for the partner key or secret")
+        }
+        interactor().start(key, secret, deviceId, appId, isDevelopment, onStartListener)
+    }
+
+    fun getConversion(appId: String, listener: OnXLDListener<Double>) {
+        if (key.isNullOrBlank() || secret.isNullOrBlank()) {
+            throw InstantiationException("Partner key or secret cannot be empty. Please asked for the partner key or secret")
+        }
+        interactor().conversion(key, secret, appId, isDevelopment, listener)
+    }
+
+    fun getWalletStatus(xldUserId: String, listener: OnXLDListener<WalletStatus>) {
+        if (key.isNullOrBlank() || secret.isNullOrBlank()) {
+            throw InstantiationException("Partner key or secret cannot be empty. Please asked for the partner key or secret")
+        }
+        interactor().getWalletStatus(key, secret, xldUserId, isDevelopment, listener)
+    }
+
+    fun linkWallet(
+        xldUserId: String,
+        xldWalletAddress: String,
+        xldOtp: String,
+        partnerUserId: String,
+        listener: OnXLDListener<LinkedWallet>
+    ) {
+        println("DEBUG: key = ${key}, secret = ${secret}")
+        if (key.isNullOrBlank() || secret.isNullOrBlank()) {
+            throw InstantiationException("Partner key or secret cannot be empty. Please asked for the partner key or secret")
+        }
+        interactor().linkWallet(
+            key = key,
+            secret = secret,
+            xldUserId = xldUserId,
+            xldWalletAddress = xldWalletAddress,
+            xldOtp = xldOtp,
+            partnerUserId = partnerUserId,
+            isDevelopment = isDevelopment,
+            listener = listener
+        )
+    }
+
 }

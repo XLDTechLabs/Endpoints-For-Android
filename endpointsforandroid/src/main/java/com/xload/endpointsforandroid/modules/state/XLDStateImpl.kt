@@ -14,8 +14,6 @@ import com.xload.endpointsforandroid.utils.Permissions.isPackageInstalled
 class XLDStateImpl : XLDState {
 
     override fun isXLoadAppInstalled(context: Context, isDevelopment: Boolean): Boolean {
-        Log.d("DEBUG", "isDevelopment = ${isDevelopment}")
-        Log.d("DEBUG", "isDevelopment = ${isXLoadAppDevelopmentInstalled(context)}")
         return if (isDevelopment) {
             isXLoadAppDevelopmentInstalled(context)
         } else {
