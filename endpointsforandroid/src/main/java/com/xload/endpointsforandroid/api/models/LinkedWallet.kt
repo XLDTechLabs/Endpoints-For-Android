@@ -16,7 +16,7 @@ data class LinkedWallet (
     val xldWalletAddress: String?,
     @SerializedName("xld_otp")
     @Expose
-    val xldOtp: String?,
+    val xldOtp: Int?,
     @SerializedName("partner_user_id")
     @Expose
     val partnerUserId: String?,

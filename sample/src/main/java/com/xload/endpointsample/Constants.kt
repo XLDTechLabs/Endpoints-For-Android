@@ -11,6 +11,9 @@ object Constants {
     const val APP_ID = "5664612471013376"
     const val SUPER_SPIN_APP_ID = "5131615344787456"
 
+    const val SAMPLE_OTP = 478709
+    const val SAMPLE_WALLET_ADDRESS = "NRmC4MvBqazisR1McaLDbGVkelUvE58goArBlpTF0l8auV4Jxr"
+    const val SAMPLE_PARTNER_ID = "test"
 
     const val UNIQUE_ID = "unique_id"
 }

@@ -90,7 +90,7 @@ class XLD(val key: String?, val secret: String?) : BaseXLD() {
     fun linkWallet(
         xldUserId: String,
         xldWalletAddress: String,
-        xldOtp: String,
+        xldOtp: Int,
         partnerUserId: String,
         listener: OnXLDListener<LinkedWallet>
     ) {

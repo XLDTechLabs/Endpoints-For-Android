@@ -52,7 +52,7 @@ interface XLDInteractor {
         secret: String,
         xldUserId: String,
         xldWalletAddress: String,
-        xldOtp: String,
+        xldOtp: Int,
         partnerUserId: String,
         isDevelopment: Boolean = true,
         listener: OnXLDListener<LinkedWallet>

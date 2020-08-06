@@ -28,14 +28,14 @@ interface EndpointForPartnerApi {
         @Query("app_id") appId: String
     ): ConversionResponse
 
-    @POST("endpoints/link")
+    @POST("endpoints/wallet/link")
     suspend fun linkWallet(
         @Header("key") key: String,
         @Header("secret") secret: String,
         @Body linkedWallet: LinkedWallet
     ): LinkWalletResponse
 
-    @GET("endpoints/wallet")
+    @GET("endpoints/wallet/status")
     suspend fun getWalletStatus(
         @Header("key") key: String,
         @Header("secret") secret: String,

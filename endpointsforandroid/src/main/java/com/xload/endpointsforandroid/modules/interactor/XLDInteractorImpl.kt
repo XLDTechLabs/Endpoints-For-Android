@@ -149,7 +149,7 @@ class XLDInteractorImpl : XLDInteractor {
         secret: String,
         xldUserId: String,
         xldWalletAddress: String,
-        xldOtp: String,
+        xldOtp: Int,
         partnerUserId: String,
         isDevelopment: Boolean,
         listener: OnXLDListener<LinkedWallet>

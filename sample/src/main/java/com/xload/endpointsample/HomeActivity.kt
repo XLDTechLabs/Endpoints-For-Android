@@ -126,23 +126,28 @@ class HomeActivity : AppCompatActivity() {
          * Link account sample
          */
         btnLinkAccount.setOnClickListener {
-            val partnerUserId = etPartnerUserId.text.toString()
             userKey?.let {xldUserId ->
                 XLD.getInstance(Constants.KEY, Constants.SECRET).linkWallet(
                     xldUserId = xldUserId,
-                    xldWalletAddress = "",
-                    xldOtp = "",
-                    partnerUserId = partnerUserId,
+                    xldWalletAddress = Constants.SAMPLE_WALLET_ADDRESS,
+                    xldOtp = Constants.SAMPLE_OTP,
+                    partnerUserId = Constants.SAMPLE_PARTNER_ID,
                     listener = object : OnXLDListener<LinkedWallet> {
                         override fun loading(isLoading: Boolean) {
-
+                            btnGetConversion.visibility = View.VISIBLE
+                            showLoading()
                         }
 
                         override fun error(error: String?) {
+                            showMessage(error ?: "")
+                            btnGetConversion.visibility = View.VISIBLE
+                            btnLinkAccount.visibility = View.VISIBLE
+                            linkWalletContainer.visibility = View.VISIBLE
                         }
 
                         override fun success(result: LinkedWallet?) {
-                            println("LinkWallet = $result")
+                            println("DEBUG: LinkWallet = $result")
+                            showMessage("linkedwallet = $result")
                         }
 
                     }
@@ -150,24 +155,15 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        btnCopyPartnerId.setOnClickListener {
-            partnerId?.let {partnerId
-                val clipboard: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("Copied", partnerId)
-                clipboard.setPrimaryClip(clip)
-            }
-
-        }
     }
 
     private fun showLinkedWalletContainer() {
         startLoading.visibility = View.GONE
         btnGetConversion.visibility = View.GONE
         btnRetryStart.visibility = View.GONE
-        tvMessage.visibility = View.GONE
+        tvMessage.visibility = View.VISIBLE
         btnLinkAccount.visibility = View.VISIBLE
         linkWalletContainer.visibility = View.VISIBLE
-        btnCopyPartnerId.visibility = View.VISIBLE
     }
 
     private fun showLoading() {
@@ -185,7 +181,7 @@ class HomeActivity : AppCompatActivity() {
         btnGetConversion.visibility = View.VISIBLE
         btnLinkAccount.visibility = View.VISIBLE
         tvMessage.visibility = View.VISIBLE
-        linkWalletContainer.visibility = View.GONE
+        linkWalletContainer.visibility = View.VISIBLE
     }
 
     private fun showMessage(string: String) {
