@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -20,7 +21,11 @@ object ServiceGenerator {
     fun getRetrofitInstance(isDevelopment: Boolean = true): Retrofit {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        val okHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .addInterceptor(interceptor).build()
 
         val baseUrl = if (isDevelopment) BASE_URL_DEVELOPMENT else BASE_URL_PRODUCTION
         val retrofitBuilder =  Retrofit.Builder()

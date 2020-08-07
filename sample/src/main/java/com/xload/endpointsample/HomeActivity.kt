@@ -1,12 +1,8 @@
 package com.xload.endpointsample
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.xload.endpointsforandroid.api.models.LinkedWallet
 import com.xload.endpointsforandroid.api.models.WalletStatus
 import com.xload.endpointsforandroid.modules.XLD
@@ -43,24 +39,29 @@ class HomeActivity : AppCompatActivity() {
             secret = Constants.SECRET
         ).start(uniqueId, Constants.SUPER_SPIN_APP_ID, object: OnXLDStartListener {
             override fun loading(isLoading: Boolean) {
-                println("DEBUG: isLoading from sample app = ${isLoading}")
+                showLoading()
             }
 
             override fun error(error: String?) {
-                println("DEBUG: error from sample app = ${error}")
+                showMessage(error ?: "")
             }
 
             override fun success(key: String) {
                 // please save this key somewhere
                 userKey = key
-                showGetConversion()
-                println("DEBUG: key from sample app = ${key}")
+                showLinkedWalletContainer()
             }
 
         })
     }
 
     private fun setClickListener() {
+        // set sample data
+        etPartnerUserId.setText(Constants.SAMPLE_PARTNER_ID)
+        etWalletAddress.setText(Constants.SAMPLE_WALLET_ADDRESS)
+        etOtp.setText(Constants.SAMPLE_OTP.toString())
+
+
         btnRetryStart.setOnClickListener {
             showLoading()
             startRequest(uniqueId)
@@ -80,13 +81,13 @@ class HomeActivity : AppCompatActivity() {
                 }
 
                 override fun error(error: String?) {
-                    btnGetConversion.visibility = View.VISIBLE
                     showMessage(error?: "")
+                    btnGetConversion.visibility = View.VISIBLE
                 }
 
                 override fun success(result: Double?) {
-                    showGetConversion()
                     showMessage("conversion = ${result}")
+                    showGetConversion()
                 }
 
             })
@@ -111,9 +112,7 @@ class HomeActivity : AppCompatActivity() {
                         }
 
                         override fun success(result: WalletStatus?) {
-                            println("walletStatus = $result")
-                            partnerId = result?.partnerUserId
-                            showMessage("Partner user id: ${partnerId}")
+                            showMessage(result.toString())
                             showLinkedWalletContainer()
                         }
 
@@ -126,28 +125,52 @@ class HomeActivity : AppCompatActivity() {
          * Link account sample
          */
         btnLinkAccount.setOnClickListener {
-            userKey?.let {xldUserId ->
+           linkedAccount()
+        }
+
+    }
+
+    /**
+     * Linked wallet account
+     */
+    private fun linkedAccount() {
+        val walletAddress = etWalletAddress.text.toString()
+        val otp = etOtp.text.toString().toInt()
+        val partnerId = etPartnerUserId.text.toString()
+
+        when {
+            etWalletAddress.text.toString().isEmpty() -> {
+                etWalletAddress.setError("Wallet address cannot be empty")
+                return
+            }
+            etOtp.text.toString().isEmpty() -> {
+                etOtp.setError("OTP cannot be empty")
+                return
+            }
+            etPartnerUserId.text.isEmpty() -> {
+                etPartnerUserId.setError("Partner user id cannot be empty")
+                return
+            }
+            else -> userKey?.let { xldUserId ->
                 XLD.getInstance(Constants.KEY, Constants.SECRET).linkWallet(
                     xldUserId = xldUserId,
-                    xldWalletAddress = Constants.SAMPLE_WALLET_ADDRESS,
-                    xldOtp = Constants.SAMPLE_OTP,
-                    partnerUserId = Constants.SAMPLE_PARTNER_ID,
+                    xldWalletAddress = walletAddress,
+                    xldOtp = otp,
+                    partnerUserId = partnerId,
                     listener = object : OnXLDListener<LinkedWallet> {
                         override fun loading(isLoading: Boolean) {
-                            btnGetConversion.visibility = View.VISIBLE
                             showLoading()
                         }
 
                         override fun error(error: String?) {
                             showMessage(error ?: "")
-                            btnGetConversion.visibility = View.VISIBLE
-                            btnLinkAccount.visibility = View.VISIBLE
-                            linkWalletContainer.visibility = View.VISIBLE
+                            showLinkedWalletContainer()
                         }
 
                         override fun success(result: LinkedWallet?) {
                             println("DEBUG: LinkWallet = $result")
                             showMessage("linkedwallet = $result")
+                            showLinkedWalletContainer()
                         }
 
                     }
@@ -155,12 +178,14 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
+
     }
 
     private fun showLinkedWalletContainer() {
         startLoading.visibility = View.GONE
-        btnGetConversion.visibility = View.GONE
         btnRetryStart.visibility = View.GONE
+        btnGetConversion.visibility = View.VISIBLE
+        btnGetWalletStatus.visibility = View.VISIBLE
         tvMessage.visibility = View.VISIBLE
         btnLinkAccount.visibility = View.VISIBLE
         linkWalletContainer.visibility = View.VISIBLE
@@ -169,6 +194,7 @@ class HomeActivity : AppCompatActivity() {
     private fun showLoading() {
         startLoading.visibility = View.VISIBLE
         btnGetConversion.visibility = View.GONE
+        btnGetWalletStatus.visibility = View.GONE
         btnRetryStart.visibility = View.GONE
         tvMessage.visibility = View.GONE
         btnLinkAccount.visibility = View.GONE
@@ -179,6 +205,7 @@ class HomeActivity : AppCompatActivity() {
         startLoading.visibility = View.GONE
         btnRetryStart.visibility = View.GONE
         btnGetConversion.visibility = View.VISIBLE
+        btnGetWalletStatus.visibility = View.VISIBLE
         btnLinkAccount.visibility = View.VISIBLE
         tvMessage.visibility = View.VISIBLE
         linkWalletContainer.visibility = View.VISIBLE
