@@ -15,9 +15,6 @@ class HomeActivity : AppCompatActivity() {
     // xldUserId
     var userKey: String? = null
 
-    // partnerId
-    var partnerId: String? = null
-
     lateinit var uniqueId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,8 +174,6 @@ class HomeActivity : AppCompatActivity() {
                 )
             }
         }
-
-
     }
 
     private fun showLinkedWalletContainer() {
