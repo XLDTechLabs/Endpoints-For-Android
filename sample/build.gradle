@@ -42,8 +42,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // library for endpoint
-    implementation project(path: ':endpointsforandroid')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     def androidxCoreVersion = '1.3.1'
@@ -58,6 +56,9 @@ dependencies {
     def appcompatVersion = '1.1.0'
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
 
+    // endpoint for android
+    //    implementation project(path: ':endpointsforandroid')
+    implementation 'com.github.XLDTechLabs:Endpoints-For-Android:1.1.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
