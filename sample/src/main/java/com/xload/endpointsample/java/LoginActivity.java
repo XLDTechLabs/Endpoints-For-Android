@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     }
 
     private void initializeXLD() {
-        XLD.getInstance().init(this, new OnXLDConnectionListener() {
+        XLD.getInstance(true).init(this, new OnXLDConnectionListener() {
             @Override
             public void onConnectionError(@NotNull XLDError error) {
                 handleXLDError(error);

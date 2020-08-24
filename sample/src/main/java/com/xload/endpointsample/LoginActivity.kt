@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
      */
     private fun initializeXLD() {
         // initialize xload sdk
-        XLD.getInstance().init(this, object: OnXLDConnectionListener {
+        XLD.getInstance(true).init(this, object: OnXLDConnectionListener {
             override fun onConnectionError(error: XLDError) {
                 handleXLDError(error)
             }

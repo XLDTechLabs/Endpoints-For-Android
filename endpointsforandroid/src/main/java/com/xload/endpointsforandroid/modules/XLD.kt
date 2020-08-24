@@ -44,7 +44,8 @@ class XLD(val key: String?, val secret: String?) : BaseXLD() {
         }
 
         @JvmStatic
-        fun getInstance(): XLD {
+        fun getInstance(development: Boolean = true): XLD {
+            isDevelopment = development
 
             if (instance == null) {
                 instance = XLD()
