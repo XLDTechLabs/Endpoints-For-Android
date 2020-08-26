@@ -104,7 +104,7 @@ class XLDInteractorImpl : XLDInteractor {
 
     } // end linked wallet
 
-    override fun getWalletStatus(
+    override fun getWallet(
         key: String,
         secret: String,
         xldUserId: String,
@@ -113,7 +113,7 @@ class XLDInteractorImpl : XLDInteractor {
     ) {
         val repository: EndpointPartnerRepository = EndpointPartnerRepositoryImpl(isDevelopment)
         CoroutineScope(Dispatchers.IO).launch {
-            repository.endpointGetWalletStatus(key, secret, xldUserId).onEach { dataState ->
+            repository.endpointGetWallet(key, secret, xldUserId).onEach { dataState ->
                 // handle each response
                 withContext(Dispatchers.Main) {
                     dataState.message?.response?.let { response ->

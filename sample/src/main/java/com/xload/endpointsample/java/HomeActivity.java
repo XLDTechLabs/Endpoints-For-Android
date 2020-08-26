@@ -18,8 +18,6 @@ import com.xload.endpointsforandroid.api.models.WalletStatus;
 import com.xload.endpointsforandroid.modules.XLD;
 import com.xload.endpointsforandroid.utils.OnXLDListener;
 
-import static java.sql.DriverManager.println;
-
 /**
  * @author John Paul Cas
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
@@ -168,7 +166,7 @@ public class HomeActivity extends AppCompatActivity {
                     Constants.KEY,
                     Constants.SECRET,
                     true /*development mode*/
-            ).getWalletStatus(
+            ).getWallet(
                     userId,
                     new OnXLDListener<WalletStatus>() {
                         @Override

@@ -69,11 +69,11 @@ class XLD(val key: String?, val secret: String?) : BaseXLD() {
         )
     }
 
-    fun getWalletStatus(xldUserId: String, listener: OnXLDListener<WalletStatus>) {
+    fun getWallet(xldUserId: String, listener: OnXLDListener<WalletStatus>) {
         if (key.isNullOrBlank() || secret.isNullOrBlank()) {
             throw InstantiationException("Partner key or secret cannot be empty. Please asked for the partner key or secret")
         }
-        interactor().getWalletStatus(key, secret, xldUserId, isDevelopment, listener)
+        interactor().getWallet(key, secret, xldUserId, isDevelopment, listener)
     }
 
     fun getConversion(appId: String, listener: OnXLDListener<Double>) {

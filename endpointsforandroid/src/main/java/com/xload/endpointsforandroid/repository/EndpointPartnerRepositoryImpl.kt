@@ -96,7 +96,7 @@ class EndpointPartnerRepositoryImpl(private val isDevelopment: Boolean = true): 
         }
     }
 
-    override fun endpointGetWalletStatus(
+    override fun endpointGetWallet(
         key: String,
         secret: String,
         xldUserId: String
@@ -106,7 +106,7 @@ class EndpointPartnerRepositoryImpl(private val isDevelopment: Boolean = true): 
         // show loading as initial state
         emit(dataState)
         try {
-            result = ServiceGenerator.getEndpointForPartnerApi(isDevelopment).getWalletStatus(
+            result = ServiceGenerator.getEndpointForPartnerApi(isDevelopment).getWallet(
                 key = key,
                 secret = secret,
                 xldUserId = xldUserId

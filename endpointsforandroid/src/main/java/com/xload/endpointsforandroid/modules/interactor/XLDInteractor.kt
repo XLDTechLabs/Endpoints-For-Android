@@ -29,7 +29,7 @@ interface XLDInteractor {
         listener: OnXLDListener<LinkedWallet>
     )
 
-    fun getWalletStatus(
+    fun getWallet(
         key: String,
         secret: String,
         xldUserId: String,

@@ -25,7 +25,7 @@ interface EndpointPartnerRepository {
         linkWallet: LinkedWallet
     ): Flow<DataState<LinkWalletResponse>>
 
-    fun endpointGetWalletStatus(
+    fun endpointGetWallet(
         key: String,
         secret: String,
         xldUserId: String

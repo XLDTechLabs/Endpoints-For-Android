@@ -26,8 +26,8 @@ interface EndpointForPartnerApi {
         @Body linkedWallet: LinkedWallet
     ): LinkWalletResponse
 
-    @GET("endpoints/wallet/status")
-    suspend fun getWalletStatus(
+    @GET("endpoints/wallet")
+    suspend fun getWallet(
         @Header("key") key: String,
         @Header("secret") secret: String,
         @Query("xld_user_id") xldUserId: String

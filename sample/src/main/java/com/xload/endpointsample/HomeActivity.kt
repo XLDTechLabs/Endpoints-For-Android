@@ -134,7 +134,7 @@ class HomeActivity : AppCompatActivity() {
                 Constants.KEY,
                 Constants.SECRET,
                 true
-            ).getWalletStatus(userId,
+            ).getWallet(userId,
                 object : OnXLDListener<WalletStatus> {
                     override fun loading(isLoading: Boolean) {
                     }
