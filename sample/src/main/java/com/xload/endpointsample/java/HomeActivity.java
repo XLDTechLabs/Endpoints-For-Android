@@ -17,9 +17,8 @@ import com.xload.endpointsforandroid.api.models.LinkedWallet;
 import com.xload.endpointsforandroid.api.models.WalletStatus;
 import com.xload.endpointsforandroid.modules.XLD;
 import com.xload.endpointsforandroid.utils.OnXLDListener;
-import com.xload.endpointsforandroid.utils.OnXLDStartListener;
 
-import org.jetbrains.annotations.NotNull;
+import static java.sql.DriverManager.println;
 
 /**
  * @author John Paul Cas
@@ -27,138 +26,62 @@ import org.jetbrains.annotations.NotNull;
  */
 public class HomeActivity extends AppCompatActivity {
 
-    private String userKey = null;
-    private String uniqueId;
+    private String xldUserId = null;
 
     private ProgressBar startLoading;
-    private Button btnRetryStart;
     private Button btnGetConversion;
     private Button btnGetWalletStatus;
     private Button btnLinkAccount;
     private LinearLayout linkWalletContainer;
+    private LinearLayout llAppStatus;
     private TextView tvMessage;
 
-    private EditText etPartnerUserId;
+    private EditText etAppId;
+    private EditText etPartnerId;
     private EditText etWalletAddress;
     private EditText etOtp;
+    private EditText etStatusUserId;
+    private EditText etConversionAppId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         startLoading = findViewById(R.id.startLoading);
-        btnRetryStart = findViewById(R.id.btnRetryStart);
         btnGetConversion = findViewById(R.id.btnGetConversion);
         btnGetWalletStatus = findViewById(R.id.btnGetWalletStatus);
         btnLinkAccount = findViewById(R.id.btnLinkAccount);
         linkWalletContainer = findViewById(R.id.linkWalletContainer);
+        llAppStatus = findViewById(R.id.llAppStatus);
         tvMessage = findViewById(R.id.tvMessage);
 
-        etPartnerUserId = findViewById(R.id.etPartnerUserId);
+        etAppId = findViewById(R.id.etAppId);
+        etStatusUserId = findViewById(R.id.etStatusUserId);
+        etPartnerId = findViewById(R.id.etPartnerId);
         etWalletAddress = findViewById(R.id.etWalletAddress);
         etOtp = findViewById(R.id.etOtp);
+        etConversionAppId = findViewById(R.id.etConversionAppId);
 
         setClickListener();
-
-        uniqueId = getIntent().getStringExtra(Constants.UNIQUE_ID);
-        startRequest(uniqueId);
-    }
-
-    // step 1
-    private void startRequest(String uniqueId) {
-        // get the userKey
-        XLD.getInstance(
-                Constants.KEY,
-                Constants.SECRET,
-                true /*development mode*/
-        ).start(uniqueId, Constants.SUPER_SPIN_APP_ID, new OnXLDStartListener() {
-            @Override
-            public void loading(boolean isLoading) {
-                showLoading();
-            }
-
-            @Override
-            public void error(@org.jetbrains.annotations.Nullable String error) {
-                showMessage(error);
-            }
-
-            @Override
-            public void success(@NotNull String key) {
-                userKey = key;
-                showLinkedWalletContainer();
-            }
-        });
     }
 
     private void setClickListener() {
         // set sample data
-        etPartnerUserId.setText(Constants.SAMPLE_PARTNER_ID);
+        etAppId.setText(Constants.APP_ID);
+        etPartnerId.setText(Constants.SAMPLE_PARTNER_ID);
         etWalletAddress.setText(Constants.SAMPLE_WALLET_ADDRESS);
         etOtp.setText(String.valueOf(Constants.SAMPLE_OTP));
 
-        btnRetryStart.setOnClickListener(v -> {
-            showLoading();
-            startRequest(uniqueId);
-        });
-
         // Get conversion sample
         btnGetConversion.setOnClickListener(v -> {
-            XLD.getInstance(
-                    Constants.KEY,
-                    Constants.SECRET,
-                    true
-            ).getConversion(Constants.SUPER_SPIN_APP_ID, new OnXLDListener<Double>() {
-                @Override
-                public void loading(boolean isLoading) {
-                    showLoading();
-                }
-
-                @Override
-                public void error(@org.jetbrains.annotations.Nullable String error) {
-                    showMessage(error);
-                    btnGetConversion.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void success(@org.jetbrains.annotations.Nullable Double result) {
-                    showMessage("Conversion = " + result.toString());
-                    showGetConversion();
-                }
-            });
+            getConversion();
         });
 
         /**
          * Get wallet status
          */
         btnGetWalletStatus.setOnClickListener(v -> {
-            if (userKey != null) {
-                XLD.getInstance(
-                        Constants.KEY,
-                        Constants.SECRET,
-                        true /*development mode*/
-                ).getWalletStatus(
-                        userKey,
-                        new OnXLDListener<WalletStatus>() {
-                            @Override
-                            public void loading(boolean isLoading) {
-                                btnGetConversion.setVisibility(View.VISIBLE);
-                                showLoading();
-                            }
-
-                            @Override
-                            public void error(@org.jetbrains.annotations.Nullable String error) {
-                                showMessage(error);
-                                btnGetConversion.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void success(@org.jetbrains.annotations.Nullable WalletStatus result) {
-                                showMessage(result.toString());
-                                showLinkedWalletContainer();
-                            }
-                        }
-                );
-            }
+           getWalletStatus();
         });
 
         btnLinkAccount.setOnClickListener(v -> {
@@ -170,88 +93,159 @@ public class HomeActivity extends AppCompatActivity {
      * Linked wallet account
      */
     private void linkedAccount() {
+        String appId = etAppId.getText().toString();
         String walletAddress = etWalletAddress.getText().toString();
         int otp = Integer.parseInt(etOtp.getText().toString());
-        String partnerId = etPartnerUserId.getText().toString();
+        String partnerId = etPartnerId.getText().toString();
 
-        if (etWalletAddress.getText().toString().isEmpty()) {
+        if (etAppId.getText().toString().isEmpty()) {
+            etWalletAddress.setError("App ID cannot be empty");
+        } else if (etWalletAddress.getText().toString().isEmpty()) {
             etWalletAddress.setError("Wallet address cannot be empty");
         } else if (etOtp.getText().toString().isEmpty()) {
             etOtp.setError("OTP cannot be empty");
-        } else if (etPartnerUserId.getText().toString().isEmpty()) {
-            etPartnerUserId.setError("Partner user id cannot be empty");
-        } else if (userKey != null) {
+        } else if (etPartnerId.getText().toString().isEmpty()) {
+            etPartnerId.setError("Partner user id cannot be empty");
+        } else {
+            submitLinkedWallet();
             XLD.getInstance(
                     Constants.KEY,
                     Constants.SECRET,
                     true /*development mode*/
             ).linkWallet(
-                    userKey,
+                    appId,
                     walletAddress,
                     otp,
                     partnerId,
                     new OnXLDListener<LinkedWallet>() {
                         @Override
                         public void loading(boolean isLoading) {
-                            showLoading();
                         }
 
                         @Override
                         public void error(@org.jetbrains.annotations.Nullable String error) {
+                            startLoading.setVisibility(View.GONE);
                             showMessage(error);
-                            showLinkedWalletContainer();
                         }
 
                         @Override
                         public void success(@org.jetbrains.annotations.Nullable LinkedWallet result) {
-                            showMessage("linkwallet " + result);
-                            showLinkedWalletContainer();
+                            xldUserId = result.getXldUserId();
+
+                            etStatusUserId.setText(result.getXldUserId());
+                            etConversionAppId.setText(result.getAppId());
+
+                            startLoading.setVisibility(View.GONE);
+                            llAppStatus.setVisibility(View.VISIBLE);
+
+                            String response = new StringBuilder("Wallet\n")
+                                    .append("appId=").append(result.getAppId()).append("\n")
+                                    .append("isLinked=").append(result.getLinked()).append("\n")
+                                    .append("otp=").append(result.getOtp()).append("\n")
+                                    .append("partnerId=").append(result.getPartnerUserId()).append("\n")
+                                    .append("walletAddress=").append(result.getWalletAddress()).append("\n")
+                                    .append("xldUserId=").append(result.getXldUserId()).append("\n")
+                                    .toString();
+                            showMessage(response);
                         }
                     }
             );
         }
     }
 
+    /**
+     * Get wallet status
+     */
+    private void getWalletStatus() {
+        if (etStatusUserId.getText().toString().isEmpty()) {
+            etStatusUserId.setError("XLD User ID cannot be empty.");
+            return;
+        } else {
+            startLoading.setVisibility(View.VISIBLE);
 
-    private void showLinkedWalletContainer() {
-        startLoading.setVisibility(View.GONE);
-        btnRetryStart.setVisibility(View.GONE);
-        btnGetConversion.setVisibility(View.VISIBLE);
-        btnGetWalletStatus.setVisibility(View.VISIBLE);
-        tvMessage.setVisibility(View.VISIBLE);
-        btnLinkAccount.setVisibility(View.VISIBLE);
-        linkWalletContainer.setVisibility(View.VISIBLE);
-    }
+            String userId = etStatusUserId.getText().toString();
+            XLD.getInstance(
+                    Constants.KEY,
+                    Constants.SECRET,
+                    true /*development mode*/
+            ).getWalletStatus(
+                    userId,
+                    new OnXLDListener<WalletStatus>() {
+                        @Override
+                        public void loading(boolean isLoading) {
 
-    private void showLoading() {
-        startLoading.setVisibility(View.VISIBLE);
-        btnGetConversion.setVisibility(View.GONE);
-        btnGetWalletStatus.setVisibility(View.GONE);
-        btnRetryStart.setVisibility(View.GONE);
-        tvMessage.setVisibility(View.GONE);
-        btnLinkAccount.setVisibility(View.GONE);
-        linkWalletContainer.setVisibility(View.GONE);
-    }
+                        }
 
-    private void showGetConversion() {
-        startLoading.setVisibility(View.GONE);
-        btnRetryStart.setVisibility(View.GONE);
-        btnGetConversion.setVisibility(View.VISIBLE);
-        btnGetWalletStatus.setVisibility(View.VISIBLE);
-        btnLinkAccount.setVisibility(View.VISIBLE);
-        tvMessage.setVisibility(View.VISIBLE);
-        linkWalletContainer.setVisibility(View.VISIBLE);
-    }
+                        @Override
+                        public void error(@org.jetbrains.annotations.Nullable String error) {
+                            startLoading.setVisibility(View.GONE);
+                            showMessage(error);
+                        }
 
-    private void showMessage(String message) {
-        startLoading.setVisibility(View.GONE);
-        tvMessage.setVisibility(View.VISIBLE);
-        tvMessage.setText(message);
-        if (userKey == null) {
-            btnRetryStart.setVisibility(View.VISIBLE);
-            btnGetConversion.setVisibility(View.GONE);
-            btnLinkAccount.setVisibility(View.GONE);
-            startLoading.setVisibility(View.GONE);
+                        @Override
+                        public void success(@org.jetbrains.annotations.Nullable WalletStatus result) {
+                            startLoading.setVisibility(View.GONE);
+                            String msg = new StringBuilder("Wallet status:\n")
+                                    .append("isLinked=").append(result.getLinked()).append("\n")
+                                    .append("partnerUserId=").append(result.getPartnerUserId()).append("\n")
+                                    .append("xldUserId=").append(result.getXldUserId()).toString();
+                            showMessage(msg);
+                        }
+                    }
+            );
         }
     }
+
+    private void getConversion() {
+        if (etConversionAppId.getText().toString().isEmpty()) {
+            etConversionAppId.setError("App ID cannot be empty.");
+            return;
+        } else {
+            showGetConversionLoading();
+
+            String appId = etConversionAppId.getText().toString();
+            XLD.getInstance(
+                    Constants.KEY,
+                    Constants.SECRET,
+                    true
+            ).getConversion(appId, new OnXLDListener<Double>() {
+                @Override
+                public void loading(boolean isLoading) {
+
+                }
+
+                @Override
+                public void error(@org.jetbrains.annotations.Nullable String error) {
+                    startLoading.setVisibility(View.GONE);
+                    showMessage(error);
+                }
+
+                @Override
+                public void success(@org.jetbrains.annotations.Nullable Double result) {
+                    startLoading.setVisibility(View.GONE);
+                    String msg = new StringBuilder("Conversion\n")
+                            .append("conversion=").append(result.toString())
+                            .toString();
+                    showMessage(msg);
+                }
+            });
+        }
+    }
+
+    private void submitLinkedWallet() {
+        llAppStatus.setVisibility(View.GONE);
+        startLoading.setVisibility(View.VISIBLE);
+    }
+
+    private void showMessage(String msg) {
+        tvMessage.setText(msg);
+    }
+
+    private void showGetConversionLoading() {
+        startLoading.setVisibility(View.VISIBLE);
+        if (etStatusUserId.getText().toString().isEmpty()) {
+            llAppStatus.setVisibility(View.GONE);
+        }
+    }
+
 }

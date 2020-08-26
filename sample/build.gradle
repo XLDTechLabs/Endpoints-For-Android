@@ -57,8 +57,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
 
     // endpoint for android
-    //    implementation project(path: ':endpointsforandroid')
-    implementation 'com.github.XLDTechLabs:Endpoints-For-Android:1.1.0'
+    implementation project(path: ':endpointsforandroid')
+//    implementation 'com.github.XLDTechLabs:Endpoints-For-Android:1.1.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

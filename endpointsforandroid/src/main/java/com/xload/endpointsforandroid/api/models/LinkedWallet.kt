@@ -8,18 +8,19 @@ import com.google.gson.annotations.SerializedName
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
  */
 data class LinkedWallet (
-    @SerializedName("xld_user_id")
+    @SerializedName("app_id")
     @Expose
-    val xldUserId: String?,
-    @SerializedName("xld_wallet_address")
+    val appId: String?,
+    @SerializedName("wallet_address")
     @Expose
-    val xldWalletAddress: String?,
-    @SerializedName("xld_otp")
+    val walletAddress: String?,
+    @SerializedName("otp")
     @Expose
-    val xldOtp: Int?,
+    val otp: Int?,
     @SerializedName("partner_user_id")
     @Expose
     val partnerUserId: String?,
 
-    val linked: Boolean = false
+    val linked: Boolean = false,
+    val xldUserId: String? = null
 )

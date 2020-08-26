@@ -21,13 +21,19 @@ object ServiceGenerator {
     fun getRetrofitInstance(isDevelopment: Boolean = true): Retrofit {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        val okHttpClient = OkHttpClient.Builder()
+        val okHttpClientBuilder = OkHttpClient.Builder()
             .connectTimeout(1, TimeUnit.MINUTES)
             .readTimeout(2, TimeUnit.MINUTES)
             .writeTimeout(2, TimeUnit.MINUTES)
-            .addInterceptor(interceptor).build()
+        
+        if (isDevelopment) {
+            okHttpClientBuilder.addInterceptor(interceptor)
+        }
+        
+        val okHttpClient = okHttpClientBuilder.build()
 
         val baseUrl = if (isDevelopment) BASE_URL_DEVELOPMENT else BASE_URL_PRODUCTION
+        
         val retrofitBuilder =  Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
@@ -40,7 +46,6 @@ object ServiceGenerator {
     fun getEndpointForPartnerApi(isDevelopment: Boolean): EndpointForPartnerApi {
         return getRetrofitInstance(isDevelopment).create(EndpointForPartnerApi::class.java)
     }
-
 
 
 }

@@ -1,12 +1,10 @@
 package com.xload.endpointsforandroid.repository
 
 import com.xload.endpointsforandroid.api.ServiceGenerator
-import com.xload.endpointsforandroid.api.models.EndpointStart
 import com.xload.endpointsforandroid.api.models.LinkedWallet
 import com.xload.endpointsforandroid.api.response.ConversionResponse
 import com.xload.endpointsforandroid.api.response.GetWalletStatusResponse
 import com.xload.endpointsforandroid.api.response.LinkWalletResponse
-import com.xload.endpointsforandroid.api.response.StartEndpointResponse
 import com.xload.endpointsforandroid.utils.DataState
 import com.xload.endpointsforandroid.utils.MessageType
 import com.xload.endpointsforandroid.utils.Response
@@ -19,34 +17,6 @@ import kotlinx.coroutines.flow.flow
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
  */
 class EndpointPartnerRepositoryImpl(private val isDevelopment: Boolean = true): EndpointPartnerRepository {
-
-    override fun endpointPartnerStart(
-        key: String,
-        secret: String,
-        endpointStart: EndpointStart
-    ): Flow<DataState<StartEndpointResponse>> = flow {
-        var result: StartEndpointResponse? = null
-        var dataState: DataState<StartEndpointResponse> = DataState.loading(true)
-        // show loading as initial state
-        emit(dataState)
-
-        try {
-            result = ServiceGenerator.getEndpointForPartnerApi(isDevelopment).startEndpoint(
-                key = key,
-                secret = secret,
-                endpointStart = endpointStart
-            )
-
-            // success response
-            dataState = DataState.data(StateMessage(Response(null, MessageType.Success)), result)
-            emit(dataState)
-        } catch (error: Exception) {
-            // error response
-            dataState = DataState.message(StateMessage(Response(error.message, MessageType.Error)))
-            emit(dataState)
-        }
-
-    }
 
     override fun endpointGetConversion(
         key: String,

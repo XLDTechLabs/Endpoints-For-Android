@@ -1,11 +1,9 @@
 package com.xload.endpointsforandroid.repository
 
-import com.xload.endpointsforandroid.api.models.EndpointStart
 import com.xload.endpointsforandroid.api.models.LinkedWallet
 import com.xload.endpointsforandroid.api.response.ConversionResponse
 import com.xload.endpointsforandroid.api.response.GetWalletStatusResponse
 import com.xload.endpointsforandroid.api.response.LinkWalletResponse
-import com.xload.endpointsforandroid.api.response.StartEndpointResponse
 import com.xload.endpointsforandroid.utils.DataState
 import kotlinx.coroutines.flow.Flow
 
@@ -14,12 +12,6 @@ import kotlinx.coroutines.flow.Flow
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
  */
 interface EndpointPartnerRepository {
-
-    fun endpointPartnerStart(
-        key: String,
-        secret: String,
-        endpointStart: EndpointStart
-    ): Flow<DataState<StartEndpointResponse>>
 
     fun endpointGetConversion(
         key: String,

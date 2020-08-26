@@ -8,9 +8,9 @@ import com.xload.endpointsforandroid.utils.Permissions.isPackageInstalled
 
 /**
  * @author John Paul Cas
- * Created by John Paul Cas on 03/08/2020.
  * Copyright (c) 2020 XLD Tech Labs. All rights reserved.
  */
+@Deprecated("Not supported anymore")
 class XLDStateImpl : XLDState {
 
     override fun isXLoadAppInstalled(context: Context, isDevelopment: Boolean): Boolean {
